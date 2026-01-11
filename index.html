@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Strike Sensi - Oficial</title>
+    <style>
+        :root {
+            --primary: #ff4655; --bg: #0b0e11; --card: #161b22;
+            --text: #e6edf3; --accent: #00ff95; --disparo: #ffb400;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); padding: 15px; }
+        .container { max-width: 500px; margin: auto; background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        h1 { text-align: center; color: var(--primary); font-size: 1.4rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .section-title { border-bottom: 1px solid #30363d; margin: 15px 0 10px; padding-bottom: 5px; color: var(--primary); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+        
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #8b949e; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #ff5d6a; transform: translateY(-2px); }
+
+        .results { display: none; margin-top: 25px; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 12px 8px; text-align: left; border-bottom: 1px solid #30363d; }
+        th { color: var(--primary); font-size: 0.75rem; }
+        .val-cam { color: var(--accent); font-weight: bold; font-size: 1rem; }
+        .val-dis { color: var(--disparo); font-weight: bold; font-size: 1rem; }
+        .mira-nome { font-weight: 500; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>BS SENSI CALCULATOR</h1>
+
+    <div class="section-title">Configurações Base</div>
+    <div class="grid-inputs">
+        <div>
+            <label>Sensi Geral</label>
+            <input type="number" id="sensiGeral" value="150" min="0" max="300">
+        </div>
+        <div>
+            <label>FOV (60-120)</label>
+            <input type="number" id="fov" value="90" min="60" max="120">
+        </div>
+    </div>
+
+    <div class="section-title">Campo de Visão (Mira)</div>
+    <select id="tipoFov">
+        <option value="independente">Independente (Zoom Padrão)</option>
+        <option value="associado">Associado (Afetado pelo FOV)</option>
+    </select>
+
+    <div class="section-title">Aceleração & Impulsos</div>
+    <select id="tipoAcel" onchange="toggleImpulsos()">
+        <option value="fixa">Velocidade Fixa</option>
+        <option value="distancia">Impulso de Distância</option>
+        <option value="velocidade">Impulso de Velocidade</option>
+    </select>
+
+    <div id="painelImpulsos" style="display:none;" class="grid-inputs">
+        <div>
+            <label>Valor (0-100)</label>
+            <input type="number" id="valorImpulso" value="0">
+        </div>
+    </div>
+
+    <button onclick="calcular()">GERAR SENSIBILIDADE</button>
+
+    <div class="results" id="resArea">
+        <div class="section-title">Tabela de Sensibilidade</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>MIRA</th>
+                    <th>CÂMERA</th>
+                    <th>DISPARO</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaCorpo"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function toggleImpulsos() {
+        const tipo = document.getElementById('tipoAcel').value;
+        document.getElementById('painelImpulsos').style.display = (tipo === 'fixa') ? 'none' : 'grid';
+    }
+
+    function calcular() {
+        const sensi = parseFloat(document.getElementById('sensiGeral').value);
+        const fov = parseFloat(document.getElementById('fov').value);
+        const tipoFov = document.getElementById('tipoFov').value;
+        const tipoAcel = document.getElementById('tipoAcel').value;
+        const impulso = parseFloat(document.getElementById('valorImpulso').value) || 0;
+
+        const fovRatio = fov / 90;
+        const acelMod = (tipoAcel !== 'fixa') ? (1 - (impulso / 400)) : 1;
+
+        // Lista de miras conforme as opções do Blood Strike
+        const miras = [
+            { nome: "Ferro / Holo / Red Dot", mult: 0.85, baixa: true },
+            { nome: "Postura Tática", mult: 0.80, baixa: true },
+            { nome: "Mira 2x", mult: 0.65, baixa: true },
+            { nome: "Mira 3x", mult: 0.55, baixa: true },
+            { nome: "Mira 4x", mult: 0.40, baixa: false },
+            { nome: "Mira 6x", mult: 0.30, baixa: false },
+            { nome: "Mira 8x", mult: 0.20, baixa: false }
+        ];
+
+        let html = '';
+        miras.forEach(mira => {
+            let multFinal = mira.mult;
+
+            // Lógica do FOV Associado para miras < 3.25x
+            if (tipoFov === 'associado' && mira.baixa) {
+                multFinal *= (1 + (fov - 60) / 200);
+            }
+
+            let resCam = Math.round(sensi * multFinal * fovRatio * acelMod);
+            let resDis = Math.round(resCam * 0.92);
+
+            resCam = Math.min(Math.max(resCam, 0), 300);
+            resDis = Math.min(Math.max(resDis, 0), 300);
+
+            html += `<tr>
+                <td class="mira-nome">${mira.nome}</td>
+                <td class="val-cam">${resCam}</td>
+                <td class="val-dis">${resDis}</td>
+            </tr>`;
+        });
+
+        document.getElementById('tabelaCorpo').innerHTML = html;
+        document.getElementById('resArea').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
