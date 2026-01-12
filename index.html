@@ -3,153 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BS Sensi Calculator - Pro</title>
+    <title>BITTECH - Blood Strike Sensi</title>
     <style>
         :root {
-            --primary: #ff4655; /* COR DA SUA MARCA AQUI */
-            --bg: #0b0e11; --card: #161b22;
-            --text: #e6edf3; --accent: #00ff95; --disparo: #ffb400;
+            --primary: #00e5ff; 
+            --bg: #0d1117; 
+            --card: #161b22;
+            --border: #30363d;
+            --text-main: #f0f6fc;
+            --text-dim: #8b949e;
+            --accent-green: #238636;
+            --accent-orange: #d29922;
         }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); padding: 15px; margin: 0; }
-        
-        /* ESTILO DA LOGO */
-        .header-logo {
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADER & LOGO */
+        .header {
             text-align: center;
-            padding: 20px 0;
+            margin-bottom: 30px;
         }
-        .header-logo img {
-            max-width: 180px; /* Ajuste o tamanho da sua logo aqui */
+
+        .header img {
+            max-width: 140px;
             height: auto;
-            filter: drop-shadow(0 0 8px var(--primary)); /* Efeito de brilho na logo */
+            margin-bottom: 10px;
         }
-        .header-logo h1 { 
-            margin-top: 10px; 
-            font-size: 1.2rem; 
-            letter-spacing: 2px; 
-            color: var(--text);
+
+        .header h1 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* FORM */
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        input, select {
+            background: #010409;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            background: var(--primary);
+            color: #0d1117;
+            border: none;
+            padding: 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        button:active { transform: scale(0.98); }
+        button:hover { opacity: 0.9; }
+
+        /* RESULTS TABLE */
+        .results-area { display: none; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            text-align: left;
+            font-size: 10px;
+            color: var(--text-dim);
+            padding-bottom: 10px;
             text-transform: uppercase;
         }
 
-        .container { max-width: 500px; margin: auto; background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        .section-title { border-bottom: 1px solid #30363d; margin: 15px 0 10px; padding-bottom: 5px; color: var(--primary); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
-        label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #8b949e; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; margin-top: 10px; }
-        button:hover { background: #ff5d6a; transform: translateY(-2px); }
-        .results { display: none; margin-top: 25px; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th, td { padding: 12px 8px; text-align: left; border-bottom: 1px solid #30363d; }
-        th { color: var(--primary); font-size: 0.75rem; }
-        .val-cam { color: var(--accent); font-weight: bold; font-size: 1rem; }
-        .val-dis { color: var(--disparo); font-weight: bold; font-size: 1rem; }
+        td {
+            padding: 14px 0;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .mira-name { color: var(--text-main); font-weight: 500; }
+        .val-cam { color: var(--primary); font-weight: 700; text-align: center; }
+        .val-dis { color: var(--accent-orange); font-weight: 700; text-align: center; }
+
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 40px;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
 
-<div class="header-logo">
-    <img src=https://i.imgur.com/4KzYrfO.png alt="Logo Blood Strike" onerror="this.style.display='none'">
-    <h1>SENSI CALCULATOR</h1>
-</div>
+<div class="app-container">
+    <div class="header">
+        <img src=https://i.imgur.com/4KzYrfO.png alt="BITTECH" onerror="this.style.display='none'">
+        <h1>Sensi Optimizer</h1>
+    </div>
 
-<div class="container">
-    <div class="section-title">Configurações Base</div>
-    <div class="grid-inputs">
-        <div>
-            <label>Sensi Geral</label>
-            <input type="number" id="sensiGeral" value="150" min="0" max="300">
+    <div class="card">
+        <span class="section-label">Configurações Gerais</span>
+        <div class="input-row">
+            <div class="field-group">
+                <label>Sensi Geral</label>
+                <input type="number" id="sensiGeral" value="150">
+            </div>
+            <div class="field-group">
+                <label>FOV</label>
+                <input type="number" id="fov" value="90">
+            </div>
         </div>
-        <div>
-            <label>FOV (60-120)</label>
-            <input type="number" id="fov" value="90" min="60" max="120">
+
+        <div class="field-group" style="margin-bottom:16px;">
+            <label>Campo de Visão</label>
+            <select id="tipoFov">
+                <option value="independente">Independente</option>
+                <option value="associado">Associado</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label>Aceleração</label>
+            <select id="tipoAcel" onchange="toggleImpulso()">
+                <option value="fixa">Velocidade Fixa</option>
+                <option value="distancia">Impulso de Distância</option>
+                <option value="velocidade">Impulso de Velocidade</option>
+            </select>
+        </div>
+
+        <div id="impulsoContainer" style="display:none; margin-top:16px;">
+            <div class="field-group">
+                <label>Valor do Impulso (0-100)</label>
+                <input type="number" id="valorImpulso" value="0">
+            </div>
         </div>
     </div>
 
-    <div class="section-title">Campo de Visão (Mira)</div>
-    <select id="tipoFov">
-        <option value="independente">Independente (Zoom Padrão)</option>
-        <option value="associado">Associado (Afetado pelo FOV)</option>
-    </select>
+    <button onclick="gerarSensi()">Gerar Configuração</button>
 
-    <div class="section-title">Aceleração & Impulsos</div>
-    <select id="tipoAcel" onchange="toggleImpulsos()">
-        <option value="fixa">Velocidade Fixa</option>
-        <option value="distancia">Impulso de Distância</option>
-        <option value="velocidade">Impulso de Velocidade</option>
-    </select>
-
-    <div id="painelImpulsos" style="display:none;" class="grid-inputs">
-        <div>
-            <label>Valor (0-100)</label>
-            <input type="number" id="valorImpulso" value="0">
+    <div class="results-area" id="resultsArea">
+        <div class="card">
+            <span class="section-label">Otimização de Mira</span>
+            <table>
+                <thead>
+                    <tr>
+                        <th>MIRA</th>
+                        <th style="text-align:center">CÂMERA</th>
+                        <th style="text-align:center">DISPARO</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCorpo"></tbody>
+            </table>
         </div>
     </div>
 
-    <button onclick="calcular()">GERAR SENSIBILIDADE</button>
-
-    <div class="results" id="resArea">
-        <div class="section-title">Tabela de Sensibilidade</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>MIRA</th>
-                    <th>CÂMERA</th>
-                    <th>DISPARO</th>
-                </tr>
-            </thead>
-            <tbody id="tabelaCorpo"></tbody>
-        </table>
+    <div class="footer">
+        DESENVOLVIDO POR BITTECH
     </div>
 </div>
 
 <script>
-    function toggleImpulsos() {
+    function toggleImpulso() {
         const tipo = document.getElementById('tipoAcel').value;
-        document.getElementById('painelImpulsos').style.display = (tipo === 'fixa') ? 'none' : 'grid';
+        document.getElementById('impulsoContainer').style.display = (tipo === 'fixa') ? 'none' : 'block';
     }
 
-    function calcular() {
+    function gerarSensi() {
         const sensi = parseFloat(document.getElementById('sensiGeral').value);
         const fov = parseFloat(document.getElementById('fov').value);
-        const tipoFov = document.getElementById('tipoFov').value;
-        const tipoAcel = document.getElementById('tipoAcel').value;
+        const fovTipo = document.getElementById('tipoFov').value;
+        const acelTipo = document.getElementById('tipoAcel').value;
         const impulso = parseFloat(document.getElementById('valorImpulso').value) || 0;
 
         const fovRatio = fov / 90;
-        const acelMod = (tipoAcel !== 'fixa') ? (1 - (impulso / 400)) : 1;
+        const acelMod = (acelTipo !== 'fixa') ? (1 - (impulso / 450)) : 1;
 
-        const miras = [
-            { nome: "Ferro / Holo / Red Dot", mult: 0.85, baixa: true },
-            { nome: "Postura Tática", mult: 0.80, baixa: true },
-            { nome: "Mira 2x", mult: 0.65, baixa: true },
-            { nome: "Mira 3x", mult: 0.55, baixa: true },
-            { nome: "Mira 4x", mult: 0.40, baixa: false },
-            { nome: "Mira 6x", mult: 0.30, baixa: false },
-            { nome: "Mira 8x", mult: 0.20, baixa: false }
+        const config = [
+            { n: "Ferro / Holo / Red Dot", m: 0.85, b: true },
+            { n: "Postura Tática", m: 0.80, b: true },
+            { n: "Mira 2x", m: 0.65, b: true },
+            { n: "Mira 3x", m: 0.55, b: true },
+            { n: "Mira 4x", m: 0.40, b: false },
+            { n: "Mira 6x", m: 0.30, b: false },
+            { n: "Mira 8x", m: 0.20, b: false }
         ];
 
         let html = '';
-        miras.forEach(mira => {
-            let multFinal = mira.mult;
-            if (tipoFov === 'associado' && mira.baixa) {
-                multFinal *= (1 + (fov - 60) / 200);
+        config.forEach(item => {
+            let mult = item.m;
+            if (fovTipo === 'associado' && item.b) {
+                mult *= (1 + (fov - 60) / 220);
             }
-            let resCam = Math.round(sensi * multFinal * fovRatio * acelMod);
-            let resDis = Math.round(resCam * 0.92);
-            resCam = Math.min(Math.max(resCam, 0), 300);
-            resDis = Math.min(Math.max(resDis, 0), 300);
+
+            let cam = Math.round(sensi * mult * fovRatio * acelMod);
+            let dis = Math.round(cam * 0.92);
+
+            cam = Math.min(Math.max(cam, 0), 300);
+            dis = Math.min(Math.max(dis, 0), 300);
 
             html += `<tr>
-                <td>${mira.nome}</td>
-                <td class="val-cam">${resCam}</td>
-                <td class="val-dis">${resDis}</td>
+                <td class="mira-name">${item.n}</td>
+                <td class="val-cam">${cam}</td>
+                <td class="val-dis">${dis}</td>
             </tr>`;
         });
 
         document.getElementById('tabelaCorpo').innerHTML = html;
-        document.getElementById('resArea').style.display = 'block';
+        document.getElementById('resultsArea').style.display = 'block';
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 </script>
+
 </body>
 </html>
