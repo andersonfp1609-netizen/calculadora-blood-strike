@@ -14,7 +14,7 @@
             --text-dim: #8b949e;
             --accent-gyro: #a371f7;
             --accent-orange: #d29922;
-            --livepix: #00ff73; /* Cor para o botão de donate */
+            --livepix: #00ff73;
         }
 
         body {
@@ -93,7 +93,6 @@
         }
         .deadzone-val { color: var(--accent-gyro); font-size: 24px; font-weight: 800; display: block; }
 
-        /* Estilos do Rodapé e Donate */
         .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 40px; padding-bottom: 30px; }
         
         .donate-btn {
@@ -222,9 +221,9 @@
 </div>
 
 <script>
-    // Contador de Acessos
     function updateCounter() {
         const counterEl = document.getElementById('count');
+        // Usando CountAPI (Serviço externo para contagem real)
         fetch('https://api.countapi.xyz/hit/bittech-sensi-optimizer/visits')
             .then(res => res.json())
             .then(res => { counterEl.innerHTML = res.value; })
@@ -246,7 +245,10 @@
 
         const fovRatio = fov / 90;
         const acelMod = (acelTipo !== 'fixa') ? (1 - (impulso / 450)) : 1;
+        
+        // Base do Giro (Limitada a 300)
         let sensiGiroBase = Math.round(sensiTela * 2.1);
+        if (sensiGiroBase > 300) sensiGiroBase = 300;
 
         const miras = [
             { n: "Ferro / Holo / Red Dot", m: 0.85, b: true, gMult: 2.10 },
@@ -266,15 +268,26 @@
             if (fovTipo === 'associado' && item.b) {
                 multBase *= (1 + (fov - 60) / 220);
             }
+
+            // Cálculo Tela
             let camTela = Math.round(sensiTela * multBase * fovRatio * acelMod);
             let disTela = Math.round(camTela * 0.92);
+
+            // Cálculo Giro
             let camGiro = Math.round(sensiGiroBase * multBase * fovRatio); 
             let disGiro = Math.round(camGiro * 0.98);
+
+            // --- TRAVA DE SEGURANÇA: LIMITE MÁXIMO DO JOGO (300) ---
+            camTela = Math.min(camTela, 300);
+            disTela = Math.min(disTela, 300);
+            camGiro = Math.min(camGiro, 300);
+            disGiro = Math.min(disGiro, 300);
 
             htmlTela += `<tr><td style="font-weight:500;">${item.n}</td><td class="val-cam">${camTela}</td><td class="val-dis">${disTela}</td></tr>`;
             htmlGiro += `<tr><td style="font-weight:500;">${item.n}</td><td class="val-gyro">${camGiro}</td><td class="val-dis" style="color:#f0f6fc">${disGiro}</td></tr>`;
         });
 
+        // Zona Morta Dinâmica
         let deadzone = Math.floor((sensiGiroBase / 35) + (sensiTela / 80));
         deadzone = Math.min(Math.max(deadzone, 2), 12); 
 
