@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BITTECH - Sensi & Gyro Master</title>
+    <title>BITTECH - Sensi Optimizer Pro</title>
     <style>
         :root {
             --primary: #00e5ff; 
@@ -65,6 +65,23 @@
         .val-dis { color: var(--accent-orange); font-weight: 700; text-align: center; }
         .val-gyro { color: var(--accent-gyro); font-weight: 700; text-align: center; }
 
+        .highlight-box {
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .gyro-box { border-color: var(--accent-gyro); background: rgba(163, 113, 247, 0.05); }
+
+        .highlight-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+        .highlight-val { font-size: 18px; font-weight: 800; color: var(--primary); }
+        .gyro-text { color: var(--accent-gyro); }
+
         .deadzone-box {
             background: rgba(163, 113, 247, 0.05);
             border: 1px dashed var(--accent-gyro);
@@ -83,27 +100,23 @@
 <div class="app-container">
     <div class="header">
         <img src=https://i.postimg.cc/2yvMw6MJ/Gemini-Generated-Image-azgo98azgo98azgo.png alt="BITTECH" onerror="this.style.display='none'">
-        <h1>Sensi Optimizer Pro</h1>
+        <h1>Sensi Optimizer Master</h1>
     </div>
 
     <div class="card">
-        <span class="section-label">Bases de Sensibilidade</span>
+        <span class="section-label">Entrada de Dados</span>
         <div class="input-row">
             <div class="field-group">
-                <label>Geral (Dedo)</label>
-                <input type="number" id="sensiGeral" value="150">
+                <label>Sensi Geral (Tela)</label>
+                <input type="number" id="sensiTela" value="100">
             </div>
-            <div class="field-group">
-                <label>Geral (Giro)</label>
-                <input type="number" id="sensiGiro" value="180">
-            </div>
-        </div>
-
-        <div class="input-row">
             <div class="field-group">
                 <label>FOV</label>
                 <input type="number" id="fov" value="90">
             </div>
+        </div>
+
+        <div class="input-row">
             <div class="field-group">
                 <label>Campo de Visão</label>
                 <select id="tipoFov">
@@ -111,18 +124,17 @@
                     <option value="associado">Associado</option>
                 </select>
             </div>
+            <div class="field-group">
+                <label>Aceleração</label>
+                <select id="tipoAcel" onchange="toggleImpulso()">
+                    <option value="fixa">Velocidade Fixa</option>
+                    <option value="distancia">Distância</option>
+                    <option value="velocidade">Velocidade</option>
+                </select>
+            </div>
         </div>
 
-        <div class="field-group">
-            <label>Tipo de Aceleração</label>
-            <select id="tipoAcel" onchange="toggleImpulso()">
-                <option value="fixa">Velocidade Fixa</option>
-                <option value="distancia">Distância</option>
-                <option value="velocidade">Velocidade</option>
-            </select>
-        </div>
-
-        <div id="impulsoContainer" style="display:none; margin-top:16px;">
+        <div id="impulsoContainer" style="display:none; margin-top:8px;">
             <div class="field-group">
                 <label>Valor do Impulso (0-100)</label>
                 <input type="number" id="valorImpulso" value="0">
@@ -130,21 +142,30 @@
         </div>
     </div>
 
-    <button onclick="gerarSensi()">Gerar Configurações</button>
+    <button onclick="calcularTudo()">Otimizar Sensibilidade</button>
 
     <div class="results-area" id="resultsArea">
+        
         <div class="card">
-            <span class="section-label">Sensibilidade de Tela (Dedo)</span>
+            <span class="section-label">Configuração de Tela</span>
+            <div class="highlight-box">
+                <span class="highlight-label">Sensi Geral Recomendada</span>
+                <span class="highlight-val" id="resGeralTela">--</span>
+            </div>
             <table>
                 <thead>
                     <tr><th>MIRA</th><th style="text-align:center">CÂMERA</th><th style="text-align:center">DISPARO</th></tr>
                 </thead>
-                <tbody id="tabelaCorpo"></tbody>
+                <tbody id="tabelaTela"></tbody>
             </table>
         </div>
 
         <div class="card" style="border-left: 4px solid var(--accent-gyro);">
-            <span class="section-label" style="color:var(--accent-gyro)">Giroscópio (Movimento)</span>
+            <span class="section-label" style="color:var(--accent-gyro)">Giroscópio Pro</span>
+            <div class="highlight-box gyro-box">
+                <span class="highlight-label gyro-text">Sensi Geral do Giro</span>
+                <span class="highlight-val gyro-text" id="resGeralGiro">--</span>
+            </div>
             <table>
                 <thead>
                     <tr><th>MIRA</th><th style="text-align:center">CÂMERA</th><th style="text-align:center">DISPARO</th></tr>
@@ -153,14 +174,13 @@
             </table>
             
             <div class="deadzone-box">
-                <label style="color: var(--text-dim); text-transform: uppercase; font-size: 10px;">Zona Morta Recomendada</label>
+                <label style="color: var(--text-dim); text-transform: uppercase; font-size: 10px;">Zona Morta Sugerida</label>
                 <span class="deadzone-val" id="deadzoneVal">--</span>
-                <p style="font-size: 10px; color: var(--text-dim); margin-top: 5px;">Ideal para estabilizar micro-tremores.</p>
             </div>
         </div>
     </div>
 
-    <div class="footer">DESENVOLVIDO POR BITTECH</div>
+    <div class="footer">POWERED BY BITTECH</div>
 </div>
 
 <script>
@@ -169,9 +189,8 @@
         document.getElementById('impulsoContainer').style.display = (tipo === 'fixa') ? 'none' : 'block';
     }
 
-    function gerarSensi() {
-        const sensiTela = parseFloat(document.getElementById('sensiGeral').value);
-        const sensiGiro = parseFloat(document.getElementById('sensiGiro').value);
+    function calcularTudo() {
+        const sensiTela = parseFloat(document.getElementById('sensiTela').value);
         const fov = parseFloat(document.getElementById('fov').value);
         const fovTipo = document.getElementById('tipoFov').value;
         const acelTipo = document.getElementById('tipoAcel').value;
@@ -180,48 +199,48 @@
         const fovRatio = fov / 90;
         const acelMod = (acelTipo !== 'fixa') ? (1 - (impulso / 450)) : 1;
 
-        const config = [
-            { n: "Ferro / Holo / Red Dot", m: 0.85, b: true },
-            { n: "Postura Tática", m: 0.80, b: true },
-            { n: "Mira 2x", m: 0.65, b: true },
-            { n: "Mira 3x", m: 0.55, b: true },
-            { n: "Mira 4x", m: 0.40, b: false },
-            { n: "Mira 6x", m: 0.30, b: false },
-            { n: "Mira 8x", m: 0.20, b: false }
+        // Cálculo da Sensibilidade Geral do Giro (Base 2.1x da tela)
+        let sensiGiroBase = Math.round(sensiTela * 2.1);
+
+        const miras = [
+            { n: "Ferro / Holo / Red Dot", m: 0.85, b: true, gMult: 2.10 },
+            { n: "Postura Tática", m: 0.80, b: true, gMult: 2.05 },
+            { n: "Mira 2x", m: 0.65, b: true, gMult: 1.95 },
+            { n: "Mira 3x", m: 0.55, b: true, gMult: 1.95 },
+            { n: "Mira 4x", m: 0.40, b: false, gMult: 1.85 },
+            { n: "Mira 6x", m: 0.30, b: false, gMult: 1.80 },
+            { n: "Mira 8x", m: 0.20, b: false, gMult: 1.80 }
         ];
 
         let htmlTela = '';
         let htmlGiro = '';
 
-        config.forEach(item => {
-            let mult = item.m;
+        miras.forEach(item => {
+            let multBase = item.m;
             if (fovTipo === 'associado' && item.b) {
-                mult *= (1 + (fov - 60) / 220);
+                multBase *= (1 + (fov - 60) / 220);
             }
 
-            // Cálculo Tela (Dedo)
-            let camTela = Math.round(sensiTela * mult * fovRatio * acelMod);
+            // Tela
+            let camTela = Math.round(sensiTela * multBase * fovRatio * acelMod);
             let disTela = Math.round(camTela * 0.92);
 
-            // Cálculo Giroscópio (Usando a Sensi Geral do Giro)
-            let camGiro = Math.round(sensiGiro * mult * fovRatio); 
-            let disGiro = Math.round(camGiro * 0.98); // Giroscópio costuma ser quase 1:1 no disparo
-
-            // Limites
-            camTela = Math.min(Math.max(camTela, 0), 300);
-            disTela = Math.min(Math.max(disTela, 0), 300);
-            camGiro = Math.min(Math.max(camGiro, 0), 400); // Giro suporta valores maiores
-            disGiro = Math.min(Math.max(disGiro, 0), 400);
+            // Giro (Calculado sobre a nova base geral do giro)
+            let camGiro = Math.round(sensiGiroBase * multBase * fovRatio); 
+            let disGiro = Math.round(camGiro * 0.98);
 
             htmlTela += `<tr><td style="font-weight:500;">${item.n}</td><td class="val-cam">${camTela}</td><td class="val-dis">${disTela}</td></tr>`;
             htmlGiro += `<tr><td style="font-weight:500;">${item.n}</td><td class="val-gyro">${camGiro}</td><td class="val-dis" style="color:#f0f6fc">${disGiro}</td></tr>`;
         });
 
-        // Zona Morta sugerida com base na intensidade do Giro e Sensi Geral
-        let deadzone = Math.floor((sensiGiro / 40) + (sensiTela / 60));
+        // Zona Morta dinâmica
+        let deadzone = Math.floor((sensiGiroBase / 35) + (sensiTela / 80));
         deadzone = Math.min(Math.max(deadzone, 2), 12); 
 
-        document.getElementById('tabelaCorpo').innerHTML = htmlTela;
+        // Atualizar interface
+        document.getElementById('resGeralTela').innerText = sensiTela;
+        document.getElementById('resGeralGiro').innerText = sensiGiroBase;
+        document.getElementById('tabelaTela').innerHTML = htmlTela;
         document.getElementById('tabelaGiro').innerHTML = htmlGiro;
         document.getElementById('deadzoneVal').innerText = deadzone;
         document.getElementById('resultsArea').style.display = 'block';
