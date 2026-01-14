@@ -92,7 +92,21 @@
         }
         .deadzone-val { color: var(--accent-gyro); font-size: 24px; font-weight: 800; display: block; }
 
-        .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 40px; opacity: 0.5; }
+        .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 40px; }
+        
+        /* Estilo do Contador */
+        .visitor-counter {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 5px 12px;
+            background: #010409;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+        .count-number { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -100,11 +114,11 @@
 <div class="app-container">
     <div class="header">
         <img src=https://i.postimg.cc/2yvMw6MJ/Gemini-Generated-Image-azgo98azgo98azgo.png alt="BITTECH" onerror="this.style.display='none'">
-        <h1>Sensi Optimizer Master</h1>
+        <h1>Sensi Optimizer Pro</h1>
     </div>
 
     <div class="card">
-        <span class="section-label">Entrada de Dados</span>
+        <span class="section-label">Configurações Base</span>
         <div class="input-row">
             <div class="field-group">
                 <label>Sensi Geral (Tela)</label>
@@ -142,16 +156,11 @@
         </div>
     </div>
 
-    <button onclick="calcularTudo()">Otimizar Sensibilidade</button>
+    <button onclick="calcularTudo()">Gerar Configurações</button>
 
     <div class="results-area" id="resultsArea">
-        
         <div class="card">
-            <span class="section-label">Configuração de Tela</span>
-            <div class="highlight-box">
-                <span class="highlight-label">Sensi Geral Recomendada</span>
-                <span class="highlight-val" id="resGeralTela">--</span>
-            </div>
+            <span class="section-label">Sensibilidade de Tela</span>
             <table>
                 <thead>
                     <tr><th>MIRA</th><th style="text-align:center">CÂMERA</th><th style="text-align:center">DISPARO</th></tr>
@@ -161,7 +170,7 @@
         </div>
 
         <div class="card" style="border-left: 4px solid var(--accent-gyro);">
-            <span class="section-label" style="color:var(--accent-gyro)">Giroscópio Pro</span>
+            <span class="section-label" style="color:var(--accent-gyro)">Giroscópio (Pulso)</span>
             <div class="highlight-box gyro-box">
                 <span class="highlight-label gyro-text">Sensi Geral do Giro</span>
                 <span class="highlight-val gyro-text" id="resGeralGiro">--</span>
@@ -174,16 +183,40 @@
             </table>
             
             <div class="deadzone-box">
-                <label style="color: var(--text-dim); text-transform: uppercase; font-size: 10px;">Zona Morta Sugerida</label>
+                <label style="color: var(--text-dim); text-transform: uppercase; font-size: 10px;">Zona Morta Recomendada</label>
                 <span class="deadzone-val" id="deadzoneVal">--</span>
             </div>
         </div>
     </div>
 
-    <div class="footer">POWERED BY BITTECH</div>
+    <div class="footer">
+        POWERED BY BITTECH
+        <br>
+        <div class="visitor-counter">
+            ACESSOS: <span class="count-number" id="count">...</span>
+        </div>
+    </div>
 </div>
 
 <script>
+    // FUNÇÃO DO CONTADOR (Usa uma API gratuita para contar acessos reais)
+    function updateCounter() {
+        const counterEl = document.getElementById('count');
+        // Usamos a CountAPI (serviço gratuito). O "key" abaixo é único para o seu site BITTECH.
+        fetch('https://api.countapi.xyz/hit/bittech-sensi-optimizer/visits')
+            .then(res => res.json())
+            .then(res => {
+                counterEl.innerHTML = res.value;
+            })
+            .catch(() => {
+                // Caso a API falhe, mostra um número fictício ou amigável
+                counterEl.innerHTML = "Disponível";
+            });
+    }
+    
+    // Chama o contador ao carregar a página
+    updateCounter();
+
     function toggleImpulso() {
         const tipo = document.getElementById('tipoAcel').value;
         document.getElementById('impulsoContainer').style.display = (tipo === 'fixa') ? 'none' : 'block';
@@ -198,8 +231,6 @@
 
         const fovRatio = fov / 90;
         const acelMod = (acelTipo !== 'fixa') ? (1 - (impulso / 450)) : 1;
-
-        // Cálculo da Sensibilidade Geral do Giro (Base 2.1x da tela)
         let sensiGiroBase = Math.round(sensiTela * 2.1);
 
         const miras = [
@@ -221,11 +252,8 @@
                 multBase *= (1 + (fov - 60) / 220);
             }
 
-            // Tela
             let camTela = Math.round(sensiTela * multBase * fovRatio * acelMod);
             let disTela = Math.round(camTela * 0.92);
-
-            // Giro (Calculado sobre a nova base geral do giro)
             let camGiro = Math.round(sensiGiroBase * multBase * fovRatio); 
             let disGiro = Math.round(camGiro * 0.98);
 
@@ -233,12 +261,9 @@
             htmlGiro += `<tr><td style="font-weight:500;">${item.n}</td><td class="val-gyro">${camGiro}</td><td class="val-dis" style="color:#f0f6fc">${disGiro}</td></tr>`;
         });
 
-        // Zona Morta dinâmica
         let deadzone = Math.floor((sensiGiroBase / 35) + (sensiTela / 80));
         deadzone = Math.min(Math.max(deadzone, 2), 12); 
 
-        // Atualizar interface
-        document.getElementById('resGeralTela').innerText = sensiTela;
         document.getElementById('resGeralGiro').innerText = sensiGiroBase;
         document.getElementById('tabelaTela').innerHTML = htmlTela;
         document.getElementById('tabelaGiro').innerHTML = htmlGiro;
