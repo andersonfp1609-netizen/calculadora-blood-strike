@@ -14,6 +14,7 @@
             --text-dim: #8b949e;
             --accent-gyro: #a371f7;
             --accent-orange: #d29922;
+            --livepix: #00ff73; /* Cor para o botão de donate */
         }
 
         body {
@@ -92,12 +93,30 @@
         }
         .deadzone-val { color: var(--accent-gyro); font-size: 24px; font-weight: 800; display: block; }
 
-        .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 40px; }
+        /* Estilos do Rodapé e Donate */
+        .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 40px; padding-bottom: 30px; }
         
-        /* Estilo do Contador */
+        .donate-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            color: var(--livepix);
+            border: 1px solid var(--livepix);
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .donate-btn:hover { background: var(--livepix); color: #000; box-shadow: 0 0 15px rgba(0, 255, 115, 0.3); }
+        .donate-btn span { margin-right: 8px; font-size: 14px; }
+
         .visitor-counter {
             display: inline-block;
-            margin-top: 15px;
             padding: 5px 12px;
             background: #010409;
             border: 1px solid var(--border);
@@ -190,8 +209,12 @@
     </div>
 
     <div class="footer">
-        POWERED BY BITTECH
+        <a href="https://pixgg.com/yoshizitu" target="_blank" class="donate-btn">
+            <span>❤️</span> Apoie o Projeto (Donate)
+        </a>
         <br>
+        POWERED BY BITTECH
+        <br><br>
         <div class="visitor-counter">
             ACESSOS: <span class="count-number" id="count">...</span>
         </div>
@@ -199,22 +222,14 @@
 </div>
 
 <script>
-    // FUNÇÃO DO CONTADOR (Usa uma API gratuita para contar acessos reais)
+    // Contador de Acessos
     function updateCounter() {
         const counterEl = document.getElementById('count');
-        // Usamos a CountAPI (serviço gratuito). O "key" abaixo é único para o seu site BITTECH.
         fetch('https://api.countapi.xyz/hit/bittech-sensi-optimizer/visits')
             .then(res => res.json())
-            .then(res => {
-                counterEl.innerHTML = res.value;
-            })
-            .catch(() => {
-                // Caso a API falhe, mostra um número fictício ou amigável
-                counterEl.innerHTML = "Disponível";
-            });
+            .then(res => { counterEl.innerHTML = res.value; })
+            .catch(() => { counterEl.innerHTML = "Ativo"; });
     }
-    
-    // Chama o contador ao carregar a página
     updateCounter();
 
     function toggleImpulso() {
@@ -251,7 +266,6 @@
             if (fovTipo === 'associado' && item.b) {
                 multBase *= (1 + (fov - 60) / 220);
             }
-
             let camTela = Math.round(sensiTela * multBase * fovRatio * acelMod);
             let disTela = Math.round(camTela * 0.92);
             let camGiro = Math.round(sensiGiroBase * multBase * fovRatio); 
