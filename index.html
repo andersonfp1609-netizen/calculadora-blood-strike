@@ -30,9 +30,20 @@
         .app-container { width: 100%; max-width: 480px; animation: fadeIn 0.8s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header { text-align: center; margin-bottom: 30px; }
-        .header img { max-width: 140px; height: auto; margin-bottom: 10px; }
-        .header h1 { font-size: 14px; text-transform: uppercase; letter-spacing: 4px; color: var(--text-dim); font-weight: 400; }
+        /* Estilização da Logo */
+        .header { text-align: center; margin-bottom: 25px; }
+        .logo-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .logo-container img {
+            max-width: 180px; /* Ajuste o tamanho da sua logo aqui */
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.2));
+        }
+        .header h1 { font-size: 14px; text-transform: uppercase; letter-spacing: 4px; color: var(--text-dim); font-weight: 400; margin-top: 10px; }
 
         .card {
             background: var(--card);
@@ -55,16 +66,30 @@
             width: 100%; background: var(--primary); color: #0d1117; border: none; padding: 16px; border-radius: 6px;
             font-weight: 700; font-size: 14px; text-transform: uppercase; cursor: pointer; transition: 0.2s;
         }
+        button:hover { filter: brightness(1.1); box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); }
 
         .results-area { display: none; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { text-align: left; font-size: 10px; color: var(--text-dim); padding-bottom: 10px; text-transform: uppercase; }
-        td { padding: 14px 0; border-top: 1px solid var(--border); font-size: 14px; }
+        td { padding: 14px 0; border-top: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
 
         .val-cam { color: var(--primary); font-weight: 700; text-align: center; }
         .val-dis { color: var(--accent-orange); font-weight: 700; text-align: center; }
         .val-gyro { color: var(--accent-gyro); font-weight: 700; text-align: center; }
+
+        .quick-tag { 
+            font-size: 9px; 
+            color: var(--accent-orange); 
+            display: block; 
+            margin-top: 6px; 
+            font-weight: bold; 
+            background: rgba(210, 153, 34, 0.1); 
+            padding: 4px 8px; 
+            border-radius: 4px;
+            width: fit-content;
+            line-height: 1.4;
+        }
 
         .highlight-box {
             background: rgba(0, 229, 255, 0.05);
@@ -77,12 +102,6 @@
             align-items: center;
         }
         
-        .gyro-box { border-color: var(--accent-gyro); background: rgba(163, 113, 247, 0.05); }
-
-        .highlight-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
-        .highlight-val { font-size: 18px; font-weight: 800; color: var(--primary); }
-        .gyro-text { color: var(--accent-gyro); }
-
         .deadzone-box {
             background: rgba(163, 113, 247, 0.05);
             border: 1px dashed var(--accent-gyro);
@@ -111,8 +130,7 @@
             margin-bottom: 20px;
             transition: 0.3s;
         }
-        .donate-btn:hover { background: var(--livepix); color: #000; box-shadow: 0 0 15px rgba(0, 255, 115, 0.3); }
-        .donate-btn span { margin-right: 8px; font-size: 14px; }
+        .donate-btn:hover { background: var(--livepix); color: #000; box-shadow: 0 0 15px rgba(0, 255, 115, 0.2); }
 
         .visitor-counter {
             display: inline-block;
@@ -120,18 +138,16 @@
             background: #010409;
             border: 1px solid var(--border);
             border-radius: 20px;
-            font-size: 10px;
-            color: var(--text-dim);
-            letter-spacing: 1px;
         }
-        .count-number { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="header">
-        <img src=https://i.postimg.cc/2yvMw6MJ/Gemini-Generated-Image-azgo98azgo98azgo.png alt="BITTECH" onerror="this.style.display='none'">
+        <div class="logo-container">
+            <img src=https://i.postimg.cc/2yvMw6MJ/Gemini-Generated-Image-azgo98azgo98azgo.png alt="BITTECH" onerror="this.style.display='none'">
+        </div>
         <h1>Sensi Optimizer Pro</h1>
     </div>
 
@@ -168,7 +184,7 @@
 
         <div id="impulsoContainer" style="display:none; margin-top:8px;">
             <div class="field-group">
-                <label>Valor do Impulso (0-100)</label>
+                <label>Valor do Impulso</label>
                 <input type="number" id="valorImpulso" value="0">
             </div>
         </div>
@@ -189,9 +205,9 @@
 
         <div class="card" style="border-left: 4px solid var(--accent-gyro);">
             <span class="section-label" style="color:var(--accent-gyro)">Giroscópio (Pulso)</span>
-            <div class="highlight-box gyro-box">
-                <span class="highlight-label gyro-text">Sensi Geral do Giro</span>
-                <span class="highlight-val gyro-text" id="resGeralGiro">--</span>
+            <div class="highlight-box" style="border-color: var(--accent-gyro);">
+                <span class="highlight-label" style="color:var(--accent-gyro)">Sensi Geral do Giro</span>
+                <span class="highlight-val" id="resGeralGiro" style="color:var(--accent-gyro)">--</span>
             </div>
             <table>
                 <thead>
@@ -210,12 +226,10 @@
     <div class="footer">
         <a href="https://pixgg.com/yoshizitu" target="_blank" class="donate-btn">
             <span>❤️</span> Apoie o Projeto (Donate)
-        </a>
-        <br>
-        POWERED BY BITTECH
-        <br><br>
+        </a><br>
+        POWERED BY BITTECH<br><br>
         <div class="visitor-counter">
-            ACESSOS: <span class="count-number" id="count">...</span>
+            ACESSOS: <span id="count" style="color:var(--primary); font-weight:bold;">...</span>
         </div>
     </div>
 </div>
@@ -223,7 +237,6 @@
 <script>
     function updateCounter() {
         const counterEl = document.getElementById('count');
-        // Usando CountAPI (Serviço externo para contagem real)
         fetch('https://api.countapi.xyz/hit/bittech-sensi-optimizer/visits')
             .then(res => res.json())
             .then(res => { counterEl.innerHTML = res.value; })
@@ -246,22 +259,19 @@
         const fovRatio = fov / 90;
         const acelMod = (acelTipo !== 'fixa') ? (1 - (impulso / 450)) : 1;
         
-        // Base do Giro (Limitada a 300)
-        let sensiGiroBase = Math.round(sensiTela * 2.1);
-        if (sensiGiroBase > 300) sensiGiroBase = 300;
+        let sensiGiroBase = Math.min(Math.round(sensiTela * 2.1), 300);
 
         const miras = [
-            { n: "Ferro / Holo / Red Dot", m: 0.85, b: true, gMult: 2.10 },
-            { n: "Postura Tática", m: 0.80, b: true, gMult: 2.05 },
-            { n: "Mira 2x", m: 0.65, b: true, gMult: 1.95 },
-            { n: "Mira 3x", m: 0.55, b: true, gMult: 1.95 },
-            { n: "Mira 4x", m: 0.40, b: false, gMult: 1.85 },
-            { n: "Mira 6x", m: 0.30, b: false, gMult: 1.80 },
-            { n: "Mira 8x", m: 0.20, b: false, gMult: 1.80 }
+            { n: "Ferro / Red Dot", m: 0.85, b: true, quick: false },
+            { n: "Postura Tática", m: 0.80, b: true, quick: false },
+            { n: "Mira 2x", m: 0.65, b: true, quick: false },
+            { n: "Mira 3x", m: 0.55, b: true, quick: false },
+            { n: "Mira 4x", m: 0.40, b: false, quick: true },
+            { n: "Mira 6x", m: 0.30, b: false, quick: true },
+            { n: "Mira 8x", m: 0.20, b: false, quick: true }
         ];
 
-        let htmlTela = '';
-        let htmlGiro = '';
+        let htmlTela = ''; let htmlGiro = '';
 
         miras.forEach(item => {
             let multBase = item.m;
@@ -269,27 +279,27 @@
                 multBase *= (1 + (fov - 60) / 220);
             }
 
-            // Cálculo Tela
-            let camTela = Math.round(sensiTela * multBase * fovRatio * acelMod);
-            let disTela = Math.round(camTela * 0.92);
+            let camT = Math.min(Math.round(sensiTela * multBase * fovRatio * acelMod), 300);
+            let disT = Math.min(Math.round(camT * 0.92), 300);
+            let camG = Math.min(Math.round(sensiGiroBase * multBase * fovRatio), 300);
+            let disG = Math.min(Math.round(camG * 0.98), 300);
 
-            // Cálculo Giro
-            let camGiro = Math.round(sensiGiroBase * multBase * fovRatio); 
-            let disGiro = Math.round(camGiro * 0.98);
+            let qLabelT = "", qLabelG = "";
+            if (item.quick) {
+                let qCamT = Math.min(Math.round(camT * 1.5), 300);
+                let qDisT = Math.min(Math.round(qCamT * 0.95), 300);
+                let qCamG = Math.min(Math.round(camG * 1.5), 300);
+                let qDisG = Math.min(Math.round(qCamG * 0.98), 300);
+                
+                qLabelT = `<span class="quick-tag">QUICK:<br>Câmera: ${qCamT} | Disparo: ${qDisT}</span>`;
+                qLabelG = `<span class="quick-tag">QUICK:<br>Câmera: ${qCamG} | Disparo: ${qDisG}</span>`;
+            }
 
-            // --- TRAVA DE SEGURANÇA: LIMITE MÁXIMO DO JOGO (300) ---
-            camTela = Math.min(camTela, 300);
-            disTela = Math.min(disTela, 300);
-            camGiro = Math.min(camGiro, 300);
-            disGiro = Math.min(disGiro, 300);
-
-            htmlTela += `<tr><td style="font-weight:500;">${item.n}</td><td class="val-cam">${camTela}</td><td class="val-dis">${disTela}</td></tr>`;
-            htmlGiro += `<tr><td style="font-weight:500;">${item.n}</td><td class="val-gyro">${camGiro}</td><td class="val-dis" style="color:#f0f6fc">${disGiro}</td></tr>`;
+            htmlTela += `<tr><td>${item.n}${qLabelT}</td><td class="val-cam">${camT}</td><td class="val-dis">${disT}</td></tr>`;
+            htmlGiro += `<tr><td>${item.n}${qLabelG}</td><td class="val-gyro">${camG}</td><td class="val-dis" style="color:#f0f6fc">${disG}</td></tr>`;
         });
 
-        // Zona Morta Dinâmica
-        let deadzone = Math.floor((sensiGiroBase / 35) + (sensiTela / 80));
-        deadzone = Math.min(Math.max(deadzone, 2), 12); 
+        let deadzone = Math.min(Math.max(Math.floor((sensiGiroBase / 35) + (sensiTela / 80)), 2), 12); 
 
         document.getElementById('resGeralGiro').innerText = sensiGiroBase;
         document.getElementById('tabelaTela').innerHTML = htmlTela;
@@ -299,6 +309,5 @@
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 </script>
-
 </body>
 </html>
