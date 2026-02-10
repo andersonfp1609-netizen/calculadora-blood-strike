@@ -8,7 +8,7 @@
         :root {
             --primary: #00e5ff; --bg: #0d1117; --card: #161b22;
             --border: #30363d; --text-main: #f0f6fc; --text-dim: #8b949e;
-            --accent-gyro: #a371f7; --accent-orange: #d29922;
+            --accent-gyro: #a371f7; --accent-orange: #d29922; --livepix: #00ff73;
         }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; display: flex; justify-content: center; padding: 20px; }
         .app-container { width: 100%; max-width: 480px; }
@@ -29,7 +29,33 @@
         .val-cam { color: var(--primary); font-weight: 700; text-align: center; }
         .val-dis { color: var(--accent-orange); font-weight: 700; text-align: center; }
         .val-gyro { color: var(--accent-gyro); font-weight: 700; text-align: center; }
-        .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 40px; padding-bottom: 30px; }
+        
+        /* Destaques do Giroscópio */
+        .highlight-box { background: rgba(163, 113, 247, 0.05); border: 1px solid var(--accent-gyro); border-radius: 8px; padding: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .deadzone-box { background: rgba(163, 113, 247, 0.03); border: 1px dashed var(--accent-gyro); border-radius: 8px; padding: 15px; margin-top: 15px; text-align: center; }
+        .deadzone-val { color: var(--accent-gyro); font-size: 24px; font-weight: 800; display: block; }
+        
+        .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 40px; padding-bottom: 30px; line-height: 1.8; }
+        
+        /* Botão de Apoio (Pix) */
+        .donate-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            color: var(--livepix);
+            border: 1px solid var(--livepix);
+            padding: 10px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            margin-top: 15px;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+        .donate-btn:hover { background: var(--livepix); color: #000; box-shadow: 0 0 15px rgba(0, 255, 115, 0.2); }
     </style>
 </head>
 <body>
@@ -88,17 +114,31 @@
 
         <div class="card" style="border-left: 4px solid var(--accent-gyro);">
             <span class="section-label" style="color:var(--accent-gyro)">Giroscópio (Pulso)</span>
+            
+            <div class="highlight-box">
+                <span style="color:var(--accent-gyro); font-size: 11px; font-weight: bold;">SENSI GERAL DO GIRO</span>
+                <span id="resGeralGiro" style="color:var(--accent-gyro); font-size: 18px; font-weight: 800;">--</span>
+            </div>
+
             <table>
                 <thead>
                     <tr><th>MIRA</th><th style="text-align:center">CÂMERA</th><th style="text-align:center">DISPARO</th></tr>
                 </thead>
                 <tbody id="tabelaGiro"></tbody>
             </table>
+
+            <div class="deadzone-box">
+                <label style="color: var(--text-dim); text-transform: uppercase; font-size: 10px;">Zona Morta Recomendada</label>
+                <span class="deadzone-val" id="deadzoneVal">--</span>
+            </div>
         </div>
     </div>
 
     <div class="footer">
-        POWERED BY BITTECH
+        POWERED BY BITTECH<br>
+        <a href="https://pixgg.com/yoshizitu" target="_blank" class="donate-btn">
+            <span>❤️</span> Apoie o Projeto (PIX)
+        </a>
     </div>
 </div>
 
@@ -111,7 +151,6 @@
         
         let sensiGiroBase = Math.min(Math.round(sensiTela * 2.1), 300);
 
-        // Multiplicadores Sniper para modo Independente (Baseados no 8x = 80 quando sensi=122)
         const miras = [
             { n: "Ferro / Red Dot", m: 0.85, isSniper: false },
             { n: "Postura Tática", m: 0.80, isSniper: false },
@@ -128,14 +167,10 @@
             let finalCamT, finalDisT;
 
             if (item.isSniper) {
-                // Se for Independente, o resultado da 8x será 80 (para base 122)
-                // Se for Associado, aplicamos a compensação inversa para manter a velocidade
                 let compensacaoAssociado = (fovTipo === 'associado') ? (1 / fovRatio) : 1;
-                
                 finalCamT = Math.round(sensiTela * item.m * (fovTipo === 'associado' ? compensacaoAssociado : 1));
                 finalDisT = Math.round(finalCamT * 0.95);
             } else {
-                // Lógica normal para miras baixas
                 let fovMod = (fovTipo === 'associado') ? (1 + (fov - 60) / 220) : 1;
                 finalCamT = Math.round(sensiTela * item.m * fovRatio * fovMod);
                 finalDisT = Math.round(finalCamT * 0.92);
@@ -148,6 +183,8 @@
             htmlGiro += `<tr><td>${item.n}</td><td class="val-gyro">${camG}</td><td class="val-dis" style="color:#f0f6fc">${disG}</td></tr>`;
         });
 
+        document.getElementById('resGeralGiro').innerText = sensiGiroBase;
+        document.getElementById('deadzoneVal').innerText = Math.min(Math.max(Math.floor((sensiGiroBase / 35) + (sensiTela / 80)), 2), 12);
         document.getElementById('tabelaTela').innerHTML = htmlTela;
         document.getElementById('tabelaGiro').innerHTML = htmlGiro;
         document.getElementById('resultsArea').style.display = 'block';
