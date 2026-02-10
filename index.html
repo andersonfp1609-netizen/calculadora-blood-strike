@@ -30,7 +30,6 @@
         .val-dis { color: var(--accent-orange); font-weight: 700; text-align: center; }
         .val-gyro { color: var(--accent-gyro); font-weight: 700; text-align: center; }
         .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 40px; padding-bottom: 30px; }
-        .visitor-counter { display: inline-block; padding: 5px 12px; background: #010409; border: 1px solid var(--border); border-radius: 20px; }
     </style>
 </head>
 <body>
@@ -38,7 +37,7 @@
 <div class="app-container">
     <div class="header">
         <div class="logo-container">
-            <img src="https://i.postimg.cc/2yvMw6MJ/Gemini-Generated-Image-azgo98azgo98azgo.png" alt="BITTECH" onerror="this.style.display='none'">
+            <img src=https://i.postimg.cc/2yvMw6MJ/Gemini-Generated-Image-azgo98azgo98azgo.png alt="BITTECH" onerror="this.style.display='none'">
         </div>
         <h1>Sensi Optimizer Pro</h1>
     </div>
@@ -99,20 +98,11 @@
     </div>
 
     <div class="footer">
-        POWERED BY BITTECH<br><br>
-        <div class="visitor-counter">ACESSOS: <span id="count" style="color:var(--primary); font-weight:bold;">...</span></div>
+        POWERED BY BITTECH
     </div>
 </div>
 
 <script>
-    function updateCounter() {
-        const counterEl = document.getElementById('count');
-        fetch('https://api.countapi.xyz/hit/bittech-sensi-optimizer/visits')
-            .then(res => res.json()).then(res => { counterEl.innerHTML = res.value; })
-            .catch(() => { counterEl.innerHTML = "Ativo"; });
-    }
-    updateCounter();
-
     function calcularTudo() {
         const sensiTela = parseFloat(document.getElementById('sensiTela').value);
         const fov = parseFloat(document.getElementById('fov').value);
@@ -121,35 +111,40 @@
         
         let sensiGiroBase = Math.min(Math.round(sensiTela * 2.1), 300);
 
-        // A lógica aqui é: A 8x é a base Sniper (0.656x). 
-        // As miras menores (4x e 6x) escalam para cima para não ficarem lentas, 
-        // mas mantendo o feeling de sniper do COD.
+        // Multiplicadores Sniper para modo Independente (Baseados no 8x = 80 quando sensi=122)
         const miras = [
-            { n: "Ferro / Red Dot", m: 0.85, b: true },
-            { n: "Postura Tática", m: 0.80, b: true },
-            { n: "Mira 2x", m: 0.65, b: true },
-            { n: "Mira 3x", m: 0.55, b: true },
-            { n: "Mira 4x", m: 0.78, b: false }, // Escala Sniper COD ajustada
-            { n: "Mira 6x", m: 0.72, b: false }, // Escala Sniper COD ajustada
-            { n: "Mira 8x", m: 0.656, b: false } // Base: 122 * 0.656 = 80
+            { n: "Ferro / Red Dot", m: 0.85, isSniper: false },
+            { n: "Postura Tática", m: 0.80, isSniper: false },
+            { n: "Mira 2x", m: 0.65, isSniper: false },
+            { n: "Mira 3x", m: 0.55, isSniper: false },
+            { n: "Mira 4x", m: 0.76, isSniper: true }, 
+            { n: "Mira 6x", m: 0.70, isSniper: true }, 
+            { n: "Mira 8x", m: 0.6558, isSniper: true } 
         ];
 
         let htmlTela = ''; let htmlGiro = '';
 
         miras.forEach(item => {
-            let multBase = item.m;
-            if (fovTipo === 'associado' && item.b) multBase *= (1 + (fov - 60) / 220);
+            let finalCamT, finalDisT;
 
-            // Cálculo de Câmera
-            let camT = Math.min(Math.round(sensiTela * multBase * (item.b ? fovRatio : 1)), 300);
-            // Cálculo de Disparo (Levemente menor para controle, mas sem selo separado)
-            let disT = Math.min(Math.round(camT * 0.95), 300);
+            if (item.isSniper) {
+                // Se for Independente, o resultado da 8x será 80 (para base 122)
+                // Se for Associado, aplicamos a compensação inversa para manter a velocidade
+                let compensacaoAssociado = (fovTipo === 'associado') ? (1 / fovRatio) : 1;
+                
+                finalCamT = Math.round(sensiTela * item.m * (fovTipo === 'associado' ? compensacaoAssociado : 1));
+                finalDisT = Math.round(finalCamT * 0.95);
+            } else {
+                // Lógica normal para miras baixas
+                let fovMod = (fovTipo === 'associado') ? (1 + (fov - 60) / 220) : 1;
+                finalCamT = Math.round(sensiTela * item.m * fovRatio * fovMod);
+                finalDisT = Math.round(finalCamT * 0.92);
+            }
 
-            // Giroscópio proporcional
-            let camG = Math.min(Math.round(sensiGiroBase * multBase), 300);
+            let camG = Math.min(Math.round(sensiGiroBase * item.m), 300);
             let disG = Math.min(Math.round(camG * 0.98), 300);
 
-            htmlTela += `<tr><td>${item.n}</td><td class="val-cam">${camT}</td><td class="val-dis">${disT}</td></tr>`;
+            htmlTela += `<tr><td>${item.n}</td><td class="val-cam">${finalCamT}</td><td class="val-dis">${finalDisT}</td></tr>`;
             htmlGiro += `<tr><td>${item.n}</td><td class="val-gyro">${camG}</td><td class="val-dis" style="color:#f0f6fc">${disG}</td></tr>`;
         });
 
