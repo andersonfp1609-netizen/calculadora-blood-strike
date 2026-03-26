@@ -3,59 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BITTECH - Sensi Optimizer Pro</title>
+    <title>BITTECH - Multi Optimizer Pro</title>
     <style>
         :root {
             --primary: #00e5ff; --bg: #0d1117; --card: #161b22;
             --border: #30363d; --text-main: #f0f6fc; --text-dim: #8b949e;
-            --accent-gyro: #a371f7; --accent-orange: #d29922; --livepix: #00ff73;
+            --accent-gyro: #a371f7; --accent-y: #ff7b72; --accent-x: #79c0ff; --livepix: #00ff73;
         }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; display: flex; justify-content: center; padding: 20px; }
-        .app-container { width: 100%; max-width: 480px; }
-        .header { text-align: center; margin-bottom: 25px; }
-        .logo-container img { max-width: 180px; height: auto; filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.2)); }
-        .header h1 { font-size: 14px; text-transform: uppercase; letter-spacing: 4px; color: var(--text-dim); font-weight: 400; margin-top: 10px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .section-label { font-size: 11px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: block; }
-        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .field-group { display: flex; flex-direction: column; }
-        label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; }
-        input, select { background: #010409; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 6px; font-size: 14px; }
-        button { width: 100%; background: var(--primary); color: #0d1117; border: none; padding: 16px; border-radius: 6px; font-weight: 700; font-size: 14px; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
-        .results-area { display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; font-size: 10px; color: var(--text-dim); padding-bottom: 10px; text-transform: uppercase; }
-        td { padding: 14px 0; border-top: 1px solid var(--border); font-size: 13px; }
-        .val-cam { color: var(--primary); font-weight: 700; text-align: center; }
-        .val-dis { color: var(--accent-orange); font-weight: 700; text-align: center; }
-        .val-gyro { color: var(--accent-gyro); font-weight: 700; text-align: center; }
+        .app-container { width: 100%; max-width: 550px; }
         
-        /* Destaques do Giroscópio */
+        /* Estilização da Logo e Título */
+        .header { text-align: center; margin-bottom: 20px; }
+        .logo-container { width: 100%; display: flex; justify-content: center; margin-bottom: 10px; }
+        .logo-container img { max-width: 180px; height: auto; filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.2)); }
+        .header h1 { font-size: 14px; text-transform: uppercase; letter-spacing: 4px; color: var(--text-dim); margin-top: 5px; font-weight: 400; }
+        
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .section-label { font-size: 11px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: block; }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .field-group { display: flex; flex-direction: column; }
+        label { font-size: 10px; color: var(--text-dim); margin-bottom: 5px; text-transform: uppercase; }
+        input, select { background: #010409; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 6px; font-size: 13px; }
+        
+        /* Menu de Seleção de Modo */
+        .mode-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .mode-btn { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #010409; color: var(--text-dim); cursor: pointer; font-size: 12px; font-weight: 700; text-transform: uppercase; transition: 0.3s; }
+        .mode-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0, 229, 255, 0.05); }
+
+        button.main-calc { width: 100%; background: var(--primary); color: #0d1117; border: none; padding: 16px; border-radius: 6px; font-weight: 800; font-size: 14px; text-transform: uppercase; cursor: pointer; transition: 0.2s; margin-bottom: 20px; }
+        .results-area { display: none; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { font-size: 9px; color: var(--text-dim); padding-bottom: 8px; text-transform: uppercase; border-bottom: 1px solid var(--border); text-align: center; }
+        td { padding: 12px 5px; border-bottom: 1px solid var(--border); font-size: 12px; text-align: center; }
+        .mira-name { text-align: left; font-weight: bold; color: var(--text-main); }
+        
+        /* Cores dos Valores */
+        .val-std-cam { color: var(--primary); font-weight: 800; }
+        .val-std-dis { color: var(--accent-orange); font-weight: 800; }
+        .val-x { color: var(--accent-x); font-weight: 800; }
+        .val-y { color: var(--accent-y); font-weight: 800; }
+        .val-gyro { color: var(--accent-gyro); font-weight: 800; }
+
+        /* Giroscópio Específico */
         .highlight-box { background: rgba(163, 113, 247, 0.05); border: 1px solid var(--accent-gyro); border-radius: 8px; padding: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .deadzone-box { background: rgba(163, 113, 247, 0.03); border: 1px dashed var(--accent-gyro); border-radius: 8px; padding: 15px; margin-top: 15px; text-align: center; }
-        .deadzone-val { color: var(--accent-gyro); font-size: 24px; font-weight: 800; display: block; }
         
-        .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 40px; padding-bottom: 30px; line-height: 1.8; }
-        
-        /* Botão de Apoio (Pix) */
-        .donate-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            color: var(--livepix);
-            border: 1px solid var(--livepix);
-            padding: 10px 24px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 11px;
-            margin-top: 15px;
-            transition: 0.3s;
-            letter-spacing: 1px;
-        }
-        .donate-btn:hover { background: var(--livepix); color: #000; box-shadow: 0 0 15px rgba(0, 255, 115, 0.2); }
+        .footer { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 30px; padding-bottom: 30px; }
+        .donate-btn { display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--livepix); color: var(--livepix); padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 700; font-size: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -65,20 +61,19 @@
         <div class="logo-container">
             <img src=https://i.postimg.cc/2yvMw6MJ/Gemini-Generated-Image-azgo98azgo98azgo.png alt="BITTECH" onerror="this.style.display='none'">
         </div>
-        <h1>Sensi Optimizer Pro</h1>
+        <h1>Sensi Hub</h1>
+    </div>
+
+    <div class="mode-selector">
+        <button class="mode-btn active" onclick="setMode('basico', this)">Sensi Básica</button>
+        <button class="mode-btn" onclick="setMode('avancado', this)">Sensi Avançada (X/Y)</button>
     </div>
 
     <div class="card">
-        <span class="section-label">Configurações Base</span>
+        <span class="section-label">Configurações Gerais</span>
         <div class="input-row">
-            <div class="field-group">
-                <label>Sensi Geral (Tela)</label>
-                <input type="number" id="sensiTela" value="122">
-            </div>
-            <div class="field-group">
-                <label>FOV</label>
-                <input type="number" id="fov" value="75">
-            </div>
+            <div class="field-group"><label>Sensi Geral (Tela)</label><input type="number" id="sensiTela" value="122"></div>
+            <div class="field-group"><label>FOV</label><input type="number" id="fov" value="75"></div>
         </div>
         <div class="input-row">
             <div class="field-group">
@@ -88,67 +83,73 @@
                     <option value="associado">Associado</option>
                 </select>
             </div>
-            <div class="field-group">
-                <label>Aceleração</label>
-                <select id="tipoAcel">
-                    <option value="fixa">Velocidade Fixa</option>
-                    <option value="distancia">Distância</option>
-                    <option value="velocidade">Velocidade</option>
-                </select>
+            <div class="field-group" id="estabilizaContainer" style="display:none;">
+                <label>Estabilização Y (%)</label>
+                <input type="number" id="estabilizaY" value="115" title="Aumenta a sensi vertical para controle de recoil">
             </div>
         </div>
     </div>
 
-    <button onclick="calcularTudo()">Gerar Configurações</button>
+    <button class="main-calc" onclick="calcularTudo()">Gerar Configurações</button>
 
     <div class="results-area" id="resultsArea">
         <div class="card">
-            <span class="section-label">Sensibilidade de Tela</span>
-            <table>
+            <span class="section-label" id="labelTabela">Configuração de Tela</span>
+            
+            <table id="tableHeaderStd">
+                <thead><tr><th style="text-align:left;">Mira</th><th>Câmera</th><th>Disparo</th></tr></thead>
+                <tbody id="corpoBasico"></tbody>
+            </table>
+            
+            <table id="tableHeaderAdv" style="display:none;">
                 <thead>
-                    <tr><th>MIRA</th><th style="text-align:center">CÂMERA</th><th style="text-align:center">DISPARO</th></tr>
+                    <tr><th rowspan="2" style="text-align:left; vertical-align:middle;">Mira</th><th colspan="2">Câmera</th><th colspan="2">Disparo</th></tr>
+                    <tr><th>X</th><th>Y</th><th>X</th><th>Y</th></tr>
                 </thead>
-                <tbody id="tabelaTela"></tbody>
+                <tbody id="corpoAvancado"></tbody>
             </table>
         </div>
 
         <div class="card" style="border-left: 4px solid var(--accent-gyro);">
             <span class="section-label" style="color:var(--accent-gyro)">Giroscópio (Pulso)</span>
-            
             <div class="highlight-box">
-                <span style="color:var(--accent-gyro); font-size: 11px; font-weight: bold;">SENSI GERAL DO GIRO</span>
+                <span style="color:var(--accent-gyro); font-size: 10px; font-weight: bold;">SENSI GERAL DO GIRO</span>
                 <span id="resGeralGiro" style="color:var(--accent-gyro); font-size: 18px; font-weight: 800;">--</span>
             </div>
-
             <table>
-                <thead>
-                    <tr><th>MIRA</th><th style="text-align:center">CÂMERA</th><th style="text-align:center">DISPARO</th></tr>
-                </thead>
-                <tbody id="tabelaGiro"></tbody>
+                <thead><tr><th style="text-align:left;">Mira</th><th>Câmera</th><th>Disparo</th></tr></thead>
+                <tbody id="corpoGiro"></tbody>
             </table>
-
             <div class="deadzone-box">
-                <label style="color: var(--text-dim); text-transform: uppercase; font-size: 10px;">Zona Morta Recomendada</label>
-                <span class="deadzone-val" id="deadzoneVal">--</span>
+                <label style="color: var(--text-dim); font-size: 9px; text-transform: uppercase;">Zona Morta Sugerida</label>
+                <span id="deadzoneVal" style="color:var(--accent-gyro); font-size: 20px; font-weight: 800; display:block;">--</span>
             </div>
         </div>
     </div>
 
     <div class="footer">
         POWERED BY BITTECH<br>
-        <a href="https://pixgg.com/yoshizitu" target="_blank" class="donate-btn">
-            <span>❤️</span> Apoie o Projeto (PIX)
-        </a>
+        <a href="https://pixgg.com/yoshizitu" target="_blank" class="donate-btn">APOIE O PROJETO (PIX)</a>
     </div>
 </div>
 
 <script>
+    let currentMode = 'basico';
+
+    function setMode(mode, btn) {
+        currentMode = mode;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('estabilizaContainer').style.display = (mode === 'avancado') ? 'block' : 'none';
+        document.getElementById('resultsArea').style.display = 'none';
+    }
+
     function calcularTudo() {
         const sensiTela = parseFloat(document.getElementById('sensiTela').value);
         const fov = parseFloat(document.getElementById('fov').value);
         const fovTipo = document.getElementById('tipoFov').value;
+        const estabY = parseFloat(document.getElementById('estabilizaY').value) / 100;
         const fovRatio = fov / 90;
-        
         let sensiGiroBase = Math.min(Math.round(sensiTela * 2.1), 300);
 
         const miras = [
@@ -161,32 +162,48 @@
             { n: "Mira 8x", m: 0.6558, isSniper: true } 
         ];
 
-        let htmlTela = ''; let htmlGiro = '';
+        let htmlBasico = ''; let htmlAvancado = ''; let htmlGiro = '';
 
         miras.forEach(item => {
-            let finalCamT, finalDisT;
-
+            let baseSensi;
             if (item.isSniper) {
-                let compensacaoAssociado = (fovTipo === 'associado') ? (1 / fovRatio) : 1;
-                finalCamT = Math.round(sensiTela * item.m * (fovTipo === 'associado' ? compensacaoAssociado : 1));
-                finalDisT = Math.round(finalCamT * 0.95);
+                let compensacao = (fovTipo === 'associado') ? (1 / fovRatio) : 1;
+                baseSensi = sensiTela * item.m * (fovTipo === 'associado' ? compensacao : 1);
             } else {
                 let fovMod = (fovTipo === 'associado') ? (1 + (fov - 60) / 220) : 1;
-                finalCamT = Math.round(sensiTela * item.m * fovRatio * fovMod);
-                finalDisT = Math.round(finalCamT * 0.92);
+                baseSensi = sensiTela * item.m * fovRatio * fovMod;
             }
 
+            // Basico
+            let camStd = Math.round(baseSensi);
+            let disStd = Math.round(camStd * 0.95);
+            htmlBasico += `<tr><td class="mira-name">${item.n}</td><td class="val-std-cam">${camStd}</td><td class="val-std-dis">${disStd}</td></tr>`;
+
+            // Avançado
+            let cx = camStd; let cy = Math.round(camStd * estabY);
+            let dx = Math.round(cx * 0.95); let dy = Math.round(cy * 1.05);
+            htmlAvancado += `<tr><td class="mira-name">${item.n}</td><td class="val-x">${cx}</td><td class="val-y">${cy}</td><td class="val-x">${dx}</td><td class="val-y">${dy}</td></tr>`;
+
+            // Giroscópio
             let camG = Math.min(Math.round(sensiGiroBase * item.m), 300);
             let disG = Math.min(Math.round(camG * 0.98), 300);
-
-            htmlTela += `<tr><td>${item.n}</td><td class="val-cam">${finalCamT}</td><td class="val-dis">${finalDisT}</td></tr>`;
-            htmlGiro += `<tr><td>${item.n}</td><td class="val-gyro">${camG}</td><td class="val-dis" style="color:#f0f6fc">${disG}</td></tr>`;
+            htmlGiro += `<tr><td class="mira-name">${item.n}</td><td class="val-gyro">${camG}</td><td class="val-gyro" style="color:#f0f6fc">${disG}</td></tr>`;
         });
 
+        // Alternar Exibição de Tabelas
+        if (currentMode === 'basico') {
+            document.getElementById('tableHeaderStd').style.display = 'table';
+            document.getElementById('tableHeaderAdv').style.display = 'none';
+            document.getElementById('corpoBasico').innerHTML = htmlBasico;
+        } else {
+            document.getElementById('tableHeaderStd').style.display = 'none';
+            document.getElementById('tableHeaderAdv').style.display = 'table';
+            document.getElementById('corpoAvancado').innerHTML = htmlAvancado;
+        }
+
         document.getElementById('resGeralGiro').innerText = sensiGiroBase;
+        document.getElementById('corpoGiro').innerHTML = htmlGiro;
         document.getElementById('deadzoneVal').innerText = Math.min(Math.max(Math.floor((sensiGiroBase / 35) + (sensiTela / 80)), 2), 12);
-        document.getElementById('tabelaTela').innerHTML = htmlTela;
-        document.getElementById('tabelaGiro').innerHTML = htmlGiro;
         document.getElementById('resultsArea').style.display = 'block';
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
