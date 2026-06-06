@@ -25,7 +25,7 @@
             box-sizing: border-box;
         }
 
-        .app-container { width: 100%; max-width: 550px; }
+        .app-container { width: 100%; max-width: 550px; z-index: 1; }
         
         .header { text-align: center; margin-bottom: 25px; }
         .header h1 { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); margin: 0; font-weight: 800; }
@@ -36,7 +36,7 @@
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
         .field-group { display: flex; flex-direction: column; }
         label { font-size: 10px; color: var(--text-dim); margin-bottom: 5px; text-transform: uppercase; }
-        input, select { background: #010409; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 6px; font-size: 13px; }
+        input, select { background: #010409; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 6px; font-size: 13px; width: 100%; box-sizing: border-box; }
         
         .mode-selector { display: flex; gap: 10px; margin-bottom: 20px; }
         .mode-btn { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #010409; color: var(--text-dim); cursor: pointer; font-size: 11px; font-weight: 700; text-transform: uppercase; transition: 0.3s; }
@@ -108,13 +108,23 @@
             </div>
         </div>
         <div class="input-row">
-            <div class="field-group" id="impulsoContainer" style="display:none;">
-                <label>Valor do Impulso</label>
-                <input type="number" id="valorImpulso" value="0">
+            <div class="field-group">
+                <label>Perfil do Giroscópio</label>
+                <select id="perfilGiro">
+                    <option value="baixa">Perfil Baixo (0 a 120)</option>
+                    <option value="media" selected>Perfil Médio (121 a 210)</option>
+                    <option value="alta">Perfil Alto (211 a 300)</option>
+                </select>
             </div>
             <div class="field-group" id="estabilizaContainer" style="display:none;">
                 <label>Estabilização Y (%)</label>
                 <input type="number" id="estabilizaY" value="115">
+            </div>
+        </div>
+        <div class="input-row" id="impulsoRow" style="display:none;">
+            <div class="field-group" id="impulsoContainer">
+                <label>Valor do Impulso</label>
+                <input type="number" id="valorImpulso" value="0">
             </div>
         </div>
     </div>
@@ -175,7 +185,8 @@
 
     function toggleImpulso() {
         const tipo = document.getElementById('tipoAcel').value;
-        document.getElementById('impulsoContainer').style.display = (tipo === 'fixa') ? 'none' : 'block';
+        const container = document.getElementById('impulsoRow');
+        container.style.display = (tipo === 'fixa') ? 'none' : 'block';
     }
 
     function calcularTudo() {
@@ -185,10 +196,28 @@
         const acelTipo = document.getElementById('tipoAcel').value;
         const impulsoVal = parseFloat(document.getElementById('valorImpulso').value) || 0;
         const estabY = parseFloat(document.getElementById('estabilizaY').value) / 100;
+        const perfilGiro = document.getElementById('perfilGiro').value;
         
         const fovRatio = fov / 90;
         const acelMod = (acelTipo !== 'fixa') ? (1 - (impulsoVal / 500)) : 1;
-        let sensiGiroBase = Math.min(Math.round(sensiTela * 2.1), 300);
+
+        // Variáveis matemáticas ajustadas para as faixas de 0 a 300 do Blood Strike
+        let sensiGiroBase = 120;
+        let baseMorta = 2;
+
+        if (perfilGiro === 'baixa') {
+            // Perfil Baixo: Escala proporcional entre 60 e 120 com base na sensi da tela
+            sensiGiroBase = Math.min(Math.max(Math.round(sensiTela * 0.85), 60), 120);
+            baseMorta = 1; // Menos tremores estruturais exige menos filtragem
+        } else if (perfilGiro === 'media') {
+            // Perfil Médio: Escala entre 121 e 210
+            sensiGiroBase = Math.min(Math.max(Math.round(sensiTela * 1.4), 121), 210);
+            baseMorta = 3;
+        } else if (perfilGiro === 'alta') {
+            // Perfil Alto: Escala entre 211 e 300
+            sensiGiroBase = Math.min(Math.max(Math.round(sensiTela * 2.1), 211), 300);
+            baseMorta = 6; // Estabilização agressiva para conter tremores de alta sensibilidade
+        }
 
         const miras = [
             { n: "Ferro / Red Dot", m: 0.85, isSniper: false },
@@ -232,7 +261,11 @@
         document.getElementById('corpoAvancado').innerHTML = hAvancado;
         document.getElementById('resGeralGiro').innerText = sensiGiroBase;
         document.getElementById('corpoGiro').innerHTML = hGiro;
-        document.getElementById('deadzoneVal').innerText = Math.min(Math.max(Math.floor((sensiGiroBase / 35) + (sensiTela / 80)), 2), 12);
+        
+        // Ajuste dinâmico fino para a recomendação de Zona Morta do jogo
+        let calculoMorta = Math.floor((sensiGiroBase / 45) + baseMorta);
+        document.getElementById('deadzoneVal').innerText = Math.min(Math.max(calculoMorta, 1), 12) + "%";
+        
         document.getElementById('resultsArea').style.display = 'block';
     }
 </script>
